@@ -1,2 +1,3 @@
 # Practicando-SQL-Server
-Practicando SQL con la base de datos de Adventure Works, utilizando la herramienta SQL Server de Microsoft.
+Base de datos: Adventure Works
+Motor de base de datos: SQL Server
