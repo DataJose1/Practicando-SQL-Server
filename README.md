@@ -1,6 +1,7 @@
 # Practicando-SQL-Server
-**Base de datos: Adventure Works**  
-**Motor de base de datos: SQL Server**  
+**Base de datos:** Adventure Works  (Empresa ficticia que se dedica a la fabricación y venta de bicicletas)  
+
+**Motor de base de datos:** SQL Server  
   
 Mostrar los empleados que tienen más de 90 horas de vacaciones:  
 ````
@@ -46,4 +47,88 @@ FROM
 ORDER BY 
   CASE SalariedFlag WHEN 1 THEN BusinessEntityID END DESC, 
   CASE WHEN SalariedFlag = 0 THEN BusinessEntityID END
+````
+Mostrar el código de subcategoría y el producto más barato de cada una de esas subcategorías:   
+````
+SELECT 
+  ProductSubCategoryID, 
+  ListPrice, 
+  ProductID 
+FROM 
+  Production.Product pp 
+WHERE 
+  ListPrice = (
+    SELECT 
+      MIN (ListPrice) 
+    FROM 
+      Production.Product pp1 
+    WHERE 
+      pp.ProductSubcategoryID = pp1.ProductSubcategoryID
+  ) 
+ORDER BY 
+  ProductSubcategoryID
+````
+Mostrar las subcategorías de los productos que tienen dos o más productos que cuestan menos de $150:  
+````
+SELECT 
+  ProductSubcategoryID, 
+  COUNT(ProductSubcategoryID) AS Cantidad 
+FROM 
+  Production.Product 
+WHERE 
+  ListPrice < 150 
+GROUP BY 
+  ProductSubcategoryID 
+HAVING 
+  COUNT(ProductSubcategoryID) > 2
+````
+Mostrar todos los códigos de subcategorías existentes junto con la cantidad para los productos cuyo precio de lista sea mayor a $70 y el precio promedio sea mayor a $300:  
+````
+SELECT 
+  ProductSubcategoryID, 
+  COUNT(ProductSubcategoryID) AS Cantidad, 
+  AVG(ListPrice) AS Promedio 
+FROM 
+  Production.Product 
+WHERE 
+  ListPrice > 70 
+GROUP BY 
+  ProductSubcategoryID 
+HAVING 
+  AVG(ListPrice) > 300
+````
+Mostrar los precios de venta de aquellos productos donde el precio de venta sea inferior al precio de lista recomendado para ese producto, ordenados por nombre de producto:  
+````
+SELECT 
+  DISTINCT p.ProductID, 
+  p.Name Producto, 
+  p.ListPrice 'Precio de lista recomendado', 
+  sd.UnitPrice 'Precio de venta' 
+FROM 
+  Sales.SalesOrderDetail AS sd 
+  JOIN Production.Product AS p ON sd.ProductID = p.ProductID 
+  AND sd.UnitPrice < p.ListPrice
+ORDER BY p.Name
+````
+Mostrar los empleados ordenados alfabéticamente por apellido y por nombre:  
+````
+SELECT 
+  p.LastName Apellido, 
+  p.FirstName Nombre 
+FROM 
+  HumanResources.Employee AS e 
+  JOIN Person.Person AS p ON e.BusinessEntityID = p.BusinessEntityID 
+ORDER BY 
+  p.LastName, 
+  p.FirstName
+````
+Mostrar todas nombre y apellido de todas las personas y en el caso de que sean empleados también mostrar el login id, sino mostrar null:  
+````
+SELECT 
+  DISTINCT pe.LastName Apellido, 
+  pe.FirstName Nombre, 
+  he.LoginID 
+FROM 
+  Person.Person pe 
+  LEFT JOIN HumanResources.Employee he ON pe.BusinessEntityID = he.BusinessEntityID
 ````
