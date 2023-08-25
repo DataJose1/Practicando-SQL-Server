@@ -132,3 +132,68 @@ FROM
   Person.Person pe 
   LEFT JOIN HumanResources.Employee he ON pe.BusinessEntityID = he.BusinessEntityID
 ````
+Clonar estructura y datos de los campos nombre, color y precio de la lista de la tabla production.product en una tabla llamada #Productos:
+````
+SELECT 
+  Color, 
+  Name, 
+  ListPrice
+INTO #Productos 
+FROM 
+  Production.Product
+````
+Crear una Common Table Expression con las órdenes de venta:
+````
+WITH SALES_CTE (
+  SalesPersonID, SalesOrderID, SalesYear
+) AS (
+  Select 
+    SalesPersonID, 
+    SalesOrderID, 
+    YEAR (OrderDate) AS Año 
+  FROM 
+    Sales.SalesOrderHeader 
+  WHERE 
+    SalesPersonID IS NOT NULL
+) 
+SELECT 
+  SalesPersonID, 
+  SalesOrderID, 
+  SalesYear 
+FROM 
+  SALES_CTE;
+````
+Clonar estructura y datos de los campos nombre, color y precio de lista de la tabla Production.Product en una tabla llamada Productos:
+````
+SELECT 
+  ProductID, 
+  Name, 
+  Color, 
+  ListPrice 
+INTO Productos 
+FROM 
+  Production.Product
+````
+Aumentar un 20% el precio de lista de los productos del proveedor 1540:
+````
+UPDATE 
+  p 
+SET 
+  ListPrice = ListPrice * 1.2 
+FROM 
+  Productos p 
+  INNER JOIN Purchasing.ProductVendor v ON p.ProductID = v.ProductID 
+WHERE 
+  v.BusinessEntityID = 1540
+````
+Eliminar los productos cuyo nombre empiece con la letra m:
+````
+DELETE FROM 
+  Productos 
+WHERE 
+  Name LIKE 'm%'
+````
+Borrar todo el contenido de la tabla Productos:
+````
+TRUNCATE TABLE Productos
+````
